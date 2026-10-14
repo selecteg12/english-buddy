@@ -25,6 +25,7 @@ export const vocabularySchema = z.object({
   word: z.string().min(1).max(64), partOfSpeech: z.string().max(60).default(''),
   translation: z.string().max(2000).default(''), definition: z.string().max(3000).default(''),
   synonyms: z.array(z.string().max(80)).max(12).default([]),
+  synonymsChecked: z.boolean().default(false),
   ipa: z.string().max(150).default(''), example: z.string().max(1500).default(''),
   sources: z.array(sourceSchema).max(10).default([]), warnings: z.array(z.string().max(250)).max(5).default([]),
   fetchedAt: z.number().default(0)

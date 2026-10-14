@@ -5,6 +5,8 @@ import { FloatingFlag } from './components/Flag';
 import { Popup } from './components/Popup';
 import { SettingsPage } from './pages/Settings';
 import './styles/app.css';
+import './styles/synonyms.css';
+import './styles/readability.css';
 
 function App() {
   const [state, setState] = useState<AppState | null>(null);

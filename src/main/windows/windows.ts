@@ -27,7 +27,7 @@ export class BuddyWindows {
     const position = settings.position ?? { x: area.x + area.width - 140, y: area.y + area.height - 160 };
     const display = screen.getDisplayNearestPoint(position);
     this.flag = this.create('flag', { ...clampRect({ ...position, width: 100, height: 108 }, display.workArea), frame: false, transparent: true, resizable: false, skipTaskbar: true, alwaysOnTop: true, focusable: false, hasShadow: false });
-    this.popup = this.create('popup', { width: 390, height: 420, frame: false, transparent: true, resizable: false, skipTaskbar: true, alwaysOnTop: true, focusable: false, hasShadow: false });
+    this.popup = this.create('popup', { width: 450, height: 520, frame: false, transparent: true, resizable: false, skipTaskbar: true, alwaysOnTop: true, focusable: false, hasShadow: false });
     this.flag.setAlwaysOnTop(true, 'pop-up-menu');
     this.popup.setAlwaysOnTop(true, 'pop-up-menu');
     this.flag.on('move', () => this.anchorPopup());

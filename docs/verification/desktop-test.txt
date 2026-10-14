@@ -1,8 +1,10 @@
 PASS: launch, onboarding, floating windows stay on top and do not take focus
+PASS: real English synonyms appear above the translation without changing modes
+PASS: 18px synonym text and every synonym fit above the footer without scrolling
 PASS: real online definition and Russian translation
+PASS: English synonyms persist when switching RU / EN
 PASS: mode switching, saving, searching vocabulary
 PASS: automatic selection via a real Windows RichTextBox mouse selection
-PASS: Ctrl+Shift+E retrieves Windows selection
-PASS: password input ignored
+SKIP: Ctrl+Shift+E and password-hotkey checks: shortcut is occupied by another running application
 PASS: mode and vocabulary persist after app restart
 PASS: no renderer JavaScript errors

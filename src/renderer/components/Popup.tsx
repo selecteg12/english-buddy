@@ -14,14 +14,16 @@ export function Popup({ state }: { state: AppState }) {
       {entry && <button className="pronounce" aria-label="Pronounce word" title="Pronounce with a Windows voice" onClick={() => perform(window.buddy.pronounce())}><Volume2 size={20} /></button>}
     </header>
     <div className="popup-content">
-      {popup.status === 'loading' && <div className="loading"><LoaderCircle className="spin" size={23} /><p>Looking up your word<span>Dictionary + Russian translation</span></p></div>}
+      {popup.status === 'loading' && <div className="loading"><LoaderCircle className="spin" size={23} /><p>Looking up your word<span>English synonyms + dictionary + translation</span></p></div>}
       {(popup.status === 'idle' || popup.status === 'error') && <div className="lookup-error"><p>{popup.message || 'Select one English word in another app. Your Buddy will take it from there.'}</p><button className="secondary" onClick={() => perform(window.buddy.copiedWord())}><Clipboard size={15} />Use copied word</button></div>}
       {entry && <>
+        <section className="popup-synonyms" aria-label="English synonyms">
+          <div className="meaning-label">ENGLISH SYNONYMS</div>
+          <div className="synonyms">{entry.synonyms.length ? entry.synonyms.map(word => <span key={word}>{word}</span>) : <small>{entry.synonymsChecked ? 'No English synonyms were found for this word.' : 'English synonyms are unavailable right now.'}</small>}</div>
+        </section>
         <div className="meaning-label">{settings.mode === 'ru' ? 'RUSSIAN TRANSLATION' : 'ENGLISH DEFINITION'}</div>
         <p className={`meaning ${settings.mode === 'ru' ? 'translation' : ''}`}>{(settings.mode === 'ru' ? entry.translation : entry.definition) || 'This provider could not return this meaning. Try the other mode or look up the word again.'}</p>
         {entry.example && settings.mode === 'en' && <p className="example">“{entry.example}”</p>}
-        <div className="meaning-label synonyms-label">SIMILAR WORDS</div>
-        <div className="synonyms">{entry.synonyms.length ? entry.synonyms.map(word => <span key={word}>{word}</span>) : <small>No synonyms supplied for this meaning.</small>}</div>
         {entry.warnings.map(warning => <p className="warning" key={warning}>{warning}</p>)}
         <div className="sources">{entry.sources.map(source => <span key={source.name}><button title={source.name} onClick={() => perform(window.buddy.openSource(source.url))}>{source.name}<ExternalLink size={10} /></button>{source.licenseUrl && <button onClick={() => perform(window.buddy.openSource(source.licenseUrl!))}>{source.license}</button>}</span>)}</div>
       </>}

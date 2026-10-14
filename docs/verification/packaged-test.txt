@@ -1,3 +1,5 @@
 PASS: packaged Windows executable launches without a development server
 PASS: bundled native helper launches; sandbox and context isolation enabled
 PASS: real English/Russian vocabulary in packaged app
+PASS: English synonyms displayed first in the packaged app
+PASS: 18px synonym text and every synonym fit above the footer without scrolling

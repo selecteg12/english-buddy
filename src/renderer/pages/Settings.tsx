@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import type { AppState, SettingsPatch } from '../../shared/schema';
 import { FlagArt } from '../components/Flag';
 import { ModeToggle } from '../components/ModeToggle';
+import { version as appVersion } from '../../../package.json';
 
 function Switch({ checked, onChange, label }: { checked: boolean; onChange: (value: boolean) => void; label: string }) {
   return <button className={`switch ${checked ? 'on' : ''}`} role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)}><span /></button>;
@@ -28,7 +29,7 @@ export function SettingsPage({ state, initialPage }: { state: AppState; initialP
       <div className="side-label">YOUR SPACE</div>
       <nav><button className={page === 'settings' ? 'active' : ''} onClick={() => setPage('settings')}><Settings2 size={18} />Preferences</button><button className={page === 'words' ? 'active' : ''} onClick={() => setPage('words')}><BookOpen size={18} />My vocabulary<span className="count">{state.words.length}</span></button></nav>
       <div className="side-companion"><FlagArt /><p>Little words.<br />Bigger possibilities.</p><small>A little English, every day.</small></div>
-      <div className="side-bottom"><span className={`status-dot ${watching ? '' : 'off'}`} />{watching ? 'Watching selections' : 'Selection watching paused'}<small>English Buddy · v0.1.0</small></div>
+      <div className="side-bottom"><span className={`status-dot ${watching ? '' : 'off'}`} />{watching ? 'Watching selections' : 'Selection watching paused'}<small>English Buddy · v{appVersion}</small></div>
     </aside>
     <main className="settings-main">
       <header className="page-header"><div><div className="eyebrow">MAKE YOURSELF AT HOME</div><h1>{page === 'words' ? 'My vocabulary' : 'A buddy, your way.'}</h1><p>{page === 'words' ? 'The words you meet. The words you keep.' : 'Small adjustments for your everyday English.'}</p></div><span className="desktop-badge">WINDOWS</span></header>
@@ -37,13 +38,13 @@ export function SettingsPage({ state, initialPage }: { state: AppState; initialP
       {error && <p className="feedback error" role="alert">{error}</p>}{notice && <p className="feedback" role="status"><Check size={15} />{notice}</p>}{state.storageWarning && <p className="feedback error">{state.storageWarning}</p>}
       {page === 'settings' ? <>
         <div className="section-title"><span>01</span>LEARNING</div>
-        <section className="settings-card"><div className="learning-row"><div className="setting-icon"><Globe2 size={19} /></div><div className="setting-text"><h3>Your learning mode</h3><p>A Russian translation or an English explanation.</p></div><ModeToggle mode={settings.mode} onChange={mode => update({ mode })} /></div></section>
+        <section className="settings-card"><div className="learning-row"><div className="setting-icon"><Globe2 size={19} /></div><div className="setting-text"><h3>Your learning mode</h3><p>English synonyms in both modes. Choose translation or definition.</p></div><ModeToggle mode={settings.mode} onChange={mode => update({ mode })} /></div></section>
         <div className="section-title"><span>02</span>HOW BUDDY HELPS</div>
         <section className="settings-card">
           <SettingRow icon={<MousePointer2 size={19} />} title="Watch text selections" detail="Look up a word when you finish highlighting it."><Switch label="Watch text selections" checked={settings.monitoring} onChange={monitoring => update({ monitoring })} /></SettingRow>
           <SettingRow icon={<Keyboard size={19} />} title="Quick lookup shortcut" detail="Ask Windows for the current selection."><div className="row-controls"><kbd>Ctrl ⇧ E</kbd><Switch label="Quick lookup shortcut" checked={settings.shortcut} onChange={shortcut => update({ shortcut })} /></div></SettingRow>
           <SettingRow icon={<Pause size={19} />} title="Keep the popup around" detail="Auto-close after a little reading time."><select aria-label="Popup timeout" value={settings.popupTimeout} onChange={e => update({ popupTimeout: Number(e.target.value) })}>{[0, 10, 20, 30, 60, 120].map(seconds => <option key={seconds} value={seconds}>{seconds ? `${seconds} seconds` : 'Until I close it'}</option>)}</select></SettingRow>
-          <SettingRow icon={<Wifi size={19} />} title="Online vocabulary" detail="Free Dictionary + Wiktionary / MyMemory. Only a word is sent."><Switch label="Online vocabulary" checked={settings.online} onChange={online => update({ online })} /></SettingRow>
+          <SettingRow icon={<Wifi size={19} />} title="Online vocabulary" detail="Datamuse + dictionaries. Only a validated word is sent."><Switch label="Online vocabulary" checked={settings.online} onChange={online => update({ online })} /></SettingRow>
         </section>
         <div className="section-title"><span>03</span>ON YOUR DESKTOP</div>
         <section className="settings-card">

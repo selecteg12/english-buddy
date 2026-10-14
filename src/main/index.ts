@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { LocalStore } from '../storage/store';
 import { VocabularyCache } from '../services/cache';
-import { FreeDictionary, WiktionaryTranslation } from '../services/providers';
+import { DatamuseSynonyms, FreeDictionary, WiktionaryTranslation } from '../services/providers';
 import { VocabularyService } from '../services/vocabulary';
 import { settingsPatchSchema, type AppState, type PopupState } from '../shared/schema';
 import { allowedSource, requireWord } from '../shared/validation';
@@ -145,7 +145,7 @@ async function start() {
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
   store = new LocalStore(app.getPath('userData'));
-  service = new VocabularyService(new FreeDictionary(), new WiktionaryTranslation(), new VocabularyCache(join(app.getPath('userData'), 'cache.json')));
+  service = new VocabularyService(new FreeDictionary(), new WiktionaryTranslation(), new VocabularyCache(join(app.getPath('userData'), 'cache.json')), new DatamuseSynonyms());
   windows = new BuddyWindows((x, y) => store.position(x, y));
   helper = new NativeSelection(join(app.isPackaged ? process.resourcesPath : app.getAppPath(), app.isPackaged ? 'native/SelectionHelper.exe' : 'native-bin/SelectionHelper.exe'), (word, explicit) => { void lookup(word, explicit); }, value => { nativeStatus = value; broadcast(); }, missing);
   registerIpc();

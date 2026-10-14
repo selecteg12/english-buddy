@@ -6,7 +6,7 @@ import { settingsPatchSchema, settingsSchema, vocabularySchema } from '../src/sh
 import { clampRect, popupBounds } from '../src/shared/geometry';
 import { LocalStore } from '../src/storage/store';
 import { VocabularyCache } from '../src/services/cache';
-import { parseDictionary, parseTranslation, parseWiktionary, requestJson, type DictionaryData } from '../src/services/providers';
+import { DatamuseSynonyms, englishSynonyms, parseDictionary, parseTranslation, parseWiktionary, parseSynonyms, requestJson, type DictionaryData } from '../src/services/providers';
 import { VocabularyService } from '../src/services/vocabulary';
 
 const folders: string[] = [];
@@ -51,6 +51,59 @@ describe('Provider parsing and request failures', () => {
   it('retries a transient failure only once', async () => {
     const fetcher = vi.fn().mockResolvedValueOnce(new Response('{}', { status: 503 })).mockResolvedValueOnce(new Response('{"ok":true}'));
     expect(await requestJson('https://example.test', fetcher)).toEqual({ ok: true }); expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+});
+describe('English synonyms', () => {
+  it('normalizes English terms, keeps phrases and rejects other languages and the original word', () => {
+    expect(englishSynonyms([' Happy ', ' Bright ', 'bright', 'счастливый', 'at   peace', '<script>', 'a@b.com'], 'happy')).toEqual(['bright', 'at peace']);
+  });
+  it('prioritizes common synonyms using provider frequency metadata', () => {
+    const data = parseSynonyms([{ word: 'halcyon', tags: ['f:0.1'] }, { word: 'content', tags: ['f:80'] }, { word: 'bright', tags: ['f:25'] }, { word: 'happy', tags: ['f:100'] }, { word: 'счастливый', tags: ['f:90'] }], 'happy');
+    expect(data.synonyms).toEqual(['content', 'bright', 'halcyon']);
+    expect(data.sources[0].url).toBe('https://www.datamuse.com/api/');
+  });
+  it('rejects malformed responses and accepts a legitimate empty result', () => {
+    expect(() => parseSynonyms({ word: 'bright' }, 'happy')).toThrow();
+    expect(() => parseSynonyms([{ word: 3 }], 'happy')).toThrow();
+    expect(parseSynonyms([], 'happy').synonyms).toEqual([]);
+  });
+  it('never sends unvalidated selected text to the synonym service', async () => {
+    const fetcher = vi.fn();
+    await expect(new DatamuseSynonyms(fetcher).lookup('private selected phrase')).rejects.toThrow('one English word');
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+  it('requests actual synonym relations and frequency metadata with a normalized word', async () => {
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify([{ word: 'uniform', tags: ['f:20'] }])));
+    expect((await new DatamuseSynonyms(fetcher).lookup(' Consistent ')).synonyms).toEqual(['uniform']);
+    expect(fetcher.mock.calls[0][0]).toContain('rel_syn=consistent&max=24&md=f');
+  });
+  it('enriches legacy cached data once without reloading translation or definition', async () => {
+    const cache = new VocabularyCache(); cache.set({ ...entry(), synonyms: [] });
+    const lookup = vi.fn(), translate = vi.fn(), synonyms = vi.fn().mockResolvedValue({ synonyms: ['uniform', 'coherent'], sources: [] });
+    const service = new VocabularyService({ lookup }, { translate }, cache, { lookup: synonyms });
+    const updated = await service.lookup('consistent');
+    expect(updated.synonyms).toEqual(['uniform', 'coherent']); expect(updated.translation).toBe('последовательный'); expect(updated.synonymsChecked).toBe(true);
+    await service.lookup('consistent'); expect(synonyms).toHaveBeenCalledTimes(1); expect(lookup).not.toHaveBeenCalled(); expect(translate).not.toHaveBeenCalled();
+  });
+  it('preserves old cached words offline without making a synonym request', async () => {
+    const cache = new VocabularyCache(); cache.set(entry()); const synonyms = vi.fn();
+    const service = new VocabularyService({ lookup: vi.fn() }, { translate: vi.fn() }, cache, { lookup: synonyms });
+    await expect(service.lookup('consistent', false)).resolves.toMatchObject({ synonyms: ['steady'] }); expect(synonyms).not.toHaveBeenCalled();
+  });
+  it('keeps dictionary synonyms when the additional service fails', async () => {
+    const service = new VocabularyService({ lookup: vi.fn().mockResolvedValue(dictionary) }, { translate: vi.fn().mockResolvedValue(translated) }, new VocabularyCache(), { lookup: vi.fn().mockRejectedValue(new Error('offline')) });
+    const result = await service.lookup('consistent'); expect(result.synonyms).toEqual(['steady']); expect(result.warnings).toEqual([]);
+  });
+  it('returns real synonyms even if the other vocabulary services are unavailable', async () => {
+    const service = new VocabularyService({ lookup: vi.fn().mockRejectedValue(new Error()) }, { translate: vi.fn().mockRejectedValue(new Error()) }, new VocabularyCache(), { lookup: vi.fn().mockResolvedValue({ synonyms: ['uniform'], sources: [] }) });
+    const result = await service.lookup('consistent'); expect(result.synonyms).toEqual(['uniform']); expect(result.definition).toBe(''); expect(result.translation).toBe(''); expect(result.warnings).toHaveLength(2);
+  });
+  it('reports synonym failure without poisoning the cache and retries on the next lookup', async () => {
+    const synonyms = vi.fn().mockRejectedValueOnce(new Error()).mockResolvedValue({ synonyms: ['uniform'], sources: [] });
+    const cache = new VocabularyCache();
+    const service = new VocabularyService({ lookup: vi.fn().mockResolvedValue({ ...dictionary, synonyms: [] }) }, { translate: vi.fn().mockResolvedValue(translated) }, cache, { lookup: synonyms });
+    const first = await service.lookup('consistent'); expect(first.warnings.join(' ')).toContain('English synonyms'); expect(cache.get('consistent')).toBeUndefined();
+    expect((await service.lookup('consistent')).synonyms).toEqual(['uniform']);
   });
 });
 describe('Cache', () => {

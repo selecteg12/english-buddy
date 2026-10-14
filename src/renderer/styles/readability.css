@@ -1,0 +1,42 @@
+.word-popup .popup-eyebrow { font-size: 10px; letter-spacing: 1px; color: #65738b; }
+.word-popup .word-header h1 { font-size: 34px; }
+.word-popup .word-header p { font-size: 14px; color: #66758c; line-height: 1.5; }
+.word-popup .ipa { font-size: 14px; color: #5a6e8e; }
+.word-popup .meaning-label { font-size: 11px; color: #66758c; letter-spacing: 1px; }
+.word-popup .popup-synonyms .meaning-label { font-size: 12px; color: #314e7b; font-weight: 700; }
+.word-popup .popup-synonyms .synonyms span { font-size: 18px; line-height: 1.45; padding: 7px 11px; color: #253f68; }
+.word-popup .synonyms small { font-size: 14px; line-height: 1.6; color: #66758c; }
+.word-popup .meaning { font-size: 18px; line-height: 1.6; color: #34445f; }
+.word-popup .meaning.translation { font-size: 24px; }
+.word-popup .example { font-size: 14px; color: #66758c; }
+.word-popup .warning { font-size: 13px; }
+.word-popup .sources { gap: 11px; }
+.word-popup .sources button { font-size: 11px; line-height: 1.65; color: #64748b; }
+.word-popup .mode-toggle button { font-size: 13px; padding: 8px 10px; }
+.word-popup .icon-button { width: 32px; height: 32px; }
+.word-popup .save-button { padding: 9px 11px; }
+.word-popup .save-button svg, .word-popup .icon-button svg { width: 20px; height: 20px; }
+.word-popup .loading p { font-size: 16px; }
+.word-popup .loading p span { font-size: 13px; color: #66758c; }
+.word-popup .lookup-error { font-size: 16px; color: #66758c; }
+.word-popup .secondary { font-size: 14px; }
+.flag-status { font-size: 10px; }
+
+.app-shell .page-header p { font-size: 14px; color: #66758c; }
+.app-shell .eyebrow, .app-shell .side-label, .app-shell .section-title { font-size: 10px; color: #65738b; }
+.app-shell .setting-text h3 { font-size: 14px; }
+.app-shell .setting-text p { font-size: 12px; color: #66758c; }
+.app-shell .learning-row .mode-toggle button { font-size: 12px; }
+.app-shell .manual-lookup input, .app-shell .manual-lookup button { font-size: 13px; }
+.app-shell .setting-row select, .app-shell kbd { font-size: 12px; }
+.app-shell .utility-buttons button { font-size: 12px; }
+.app-shell .help-note strong { font-size: 13px; }
+.app-shell .help-note p, .app-shell .native-status { font-size: 12px; color: #66758c; }
+.app-shell .side-bottom { font-size: 12px; line-height: 1.5; color: #66758c; }
+.app-shell .side-bottom small, .app-shell .side-companion small { font-size: 11px; color: #66758c; }
+.app-shell .settings-footer { font-size: 10px; color: #66758c; }
+.app-shell .welcome-card p, .app-shell .primary { font-size: 13px; }
+.app-shell .saved-word > p { font-size: 14px; color: #66758c; }
+.app-shell .saved-word .saved-translation { font-size: 18px; color: #34445f; }
+.app-shell .saved-word .synonyms span { font-size: 13px; color: #536b91; }
+.app-shell .saved-date, .app-shell .saved-date button { font-size: 11px; }

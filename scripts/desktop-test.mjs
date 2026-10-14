@@ -34,10 +34,24 @@ try {
   await expect.poll(() => popup.evaluate(async () => (await window.buddy.getState()).popup.status), { timeout: 25000 }).toBe('ready');
   const entry = await popup.evaluate(async () => (await window.buddy.getState()).popup.entry);
   expect(entry.definition.length).toBeGreaterThan(0); expect(/[а-яё]/i.test(entry.translation)).toBe(true);
+  expect(entry.synonyms.length).toBeGreaterThan(0);
+  expect(entry.synonyms.every(word => /^[a-z]+(?:[ '-][a-z]+)*$/.test(word))).toBe(true);
+  const synonymRegion = popup.getByRole('region', { name: 'English synonyms' });
+  await expect(synonymRegion).toBeVisible();
+  await expect(synonymRegion.locator('.synonyms span')).toHaveText(entry.synonyms);
+  const synonymsBox = await synonymRegion.boundingBox(), meaningBox = await popup.locator('.meaning').boundingBox();
+  expect(synonymsBox.y).toBeLessThan(meaningBox.y);
+  const footerBox = await popup.locator('.popup-footer').boundingBox();
+  expect(synonymsBox.y + synonymsBox.height).toBeLessThanOrEqual(footerBox.y);
+  expect(await synonymRegion.locator('.synonyms span').first().evaluate(element => getComputedStyle(element).fontSize)).toBe('18px');
+  report.push('PASS: real English synonyms appear above the translation without changing modes');
+  report.push('PASS: 18px synonym text and every synonym fit above the footer without scrolling');
   report.push('PASS: real online definition and Russian translation');
   await popup.screenshot({ path: resolve(artifacts, 'popup-ru.png'), omitBackground: true });
   await popup.getByRole('button', { name: 'EN Definition' }).click();
   await expect(popup.locator('.meaning')).toHaveText(entry.definition);
+  await expect(synonymRegion.locator('.synonyms span')).toHaveText(entry.synonyms);
+  report.push('PASS: English synonyms persist when switching RU / EN');
   await popup.getByRole('button', { name: 'Save word', exact: true }).click();
   await expect(popup.getByRole('button', { name: 'Word saved' })).toBeVisible();
   await popup.screenshot({ path: resolve(artifacts, 'popup-en.png'), omitBackground: true });
@@ -69,18 +83,24 @@ try {
   expect(popupVisible).toBe(true);
   report.push('PASS: automatic selection via a real Windows RichTextBox mouse selection');
   await popup.evaluate(() => window.buddy.closePopup());
-  fixture.stdin.write('shortcut\n');
-  await expect.poll(() => app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().find(window => window.webContents.getURL().includes('view=popup')).isVisible()), { timeout: 10000 }).toBe(true);
-  report.push('PASS: Ctrl+Shift+E retrieves Windows selection');
-  fixture.stdin.write('password\n');
-  await expect.poll(() => popup.evaluate(async () => (await window.buddy.getState()).popup.message), { timeout: 10000 }).toContain('Protected input');
-  report.push('PASS: password input ignored');
+  const shortcutAvailable = await settings.evaluate(async () => (await window.buddy.getState()).shortcutAvailable);
+  if (shortcutAvailable) {
+    fixture.stdin.write('shortcut\n');
+    await expect.poll(() => app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().find(window => window.webContents.getURL().includes('view=popup')).isVisible()), { timeout: 10000 }).toBe(true);
+    report.push('PASS: Ctrl+Shift+E retrieves Windows selection');
+    fixture.stdin.write('password\n');
+    await expect.poll(() => popup.evaluate(async () => (await window.buddy.getState()).popup.message), { timeout: 10000 }).toContain('Protected input');
+    report.push('PASS: password input ignored');
+  } else {
+    report.push('SKIP: Ctrl+Shift+E and password-hotkey checks: shortcut is occupied by another running application');
+  }
   fixture.stdin.write('quit\n'); fixtureLines.close();
   await app.close(); app = null;
   app = await electron.launch({ args: ['.', `--buddy-data=${data}`], env: environment });
   await expect.poll(() => app.windows().length).toBe(2);
   const restored = await app.windows().find(page => page.url().includes('view=flag')).evaluate(() => window.buddy.getState());
   expect(restored.settings.mode).toBe('en'); expect(restored.words.map(word => word.word)).toEqual(['consistent']);
+  expect(restored.words[0].synonyms).toEqual(entry.synonyms);
   report.push('PASS: mode and vocabulary persist after app restart');
   expect(rendererErrors).toEqual([]);
   report.push('PASS: no renderer JavaScript errors');

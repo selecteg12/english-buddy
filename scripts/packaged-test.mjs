@@ -23,7 +23,15 @@ try {
   await expect.poll(() => popup.evaluate(async () => (await window.buddy.getState()).popup.status), { timeout: 30000 }).toBe('ready');
   const entry = await popup.evaluate(async () => (await window.buddy.getState()).popup.entry);
   expect(entry.translation).toContain('последовательный'); expect(entry.definition.length).toBeGreaterThan(0);
+  expect(entry.synonyms.length).toBeGreaterThan(0);
+  await expect(popup.getByRole('region', { name: 'English synonyms' }).locator('.synonyms span')).toHaveText(entry.synonyms);
+  expect(await popup.locator('.synonyms span').first().evaluate(element => getComputedStyle(element).fontSize)).toBe('18px');
+  const synonymsBox = await popup.getByRole('region', { name: 'English synonyms' }).boundingBox();
+  const footerBox = await popup.locator('.popup-footer').boundingBox();
+  expect(synonymsBox.y + synonymsBox.height).toBeLessThanOrEqual(footerBox.y);
   await popup.screenshot({ path: resolve(root, 'packaged-popup.png'), omitBackground: true });
   report.push('PASS: real English/Russian vocabulary in packaged app');
+  report.push('PASS: English synonyms displayed first in the packaged app');
+  report.push('PASS: 18px synonym text and every synonym fit above the footer without scrolling');
 } catch (error) { report.push(`FAIL: ${error.stack || error.message}`); process.exitCode = 1; }
 finally { if (app) await app.close(); await writeFile(resolve(root, 'packaged-test.txt'), report.join('\n') + '\n'); console.log(report.join('\n')); }

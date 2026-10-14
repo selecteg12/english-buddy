@@ -4,9 +4,13 @@
 
 Windows 10/11 x64 desktop companion for learning English while reading other apps. Electron + React + TypeScript, with a separate C# UI Automation helper. Interface language: English.
 
+**English synonyms appear first whenever you select a word, in both RU and EN modes.** Translation or definition follows below. See [CHANGELOG.md](CHANGELOG.md) for version 0.1.1.
+
+Synonyms use larger 18 px text and stronger contrast. The popup is 450 × 520, with larger labels, meanings, controls and preferences text.
+
 ## Use the app
 
-Download the [portable executable](https://github.com/selecteg12/english-buddy/releases/download/v0.1.0/English-Buddy-Portable-0.1.0-x64.exe) or [installer](https://github.com/selecteg12/english-buddy/releases/download/v0.1.0/English-Buddy-Setup-0.1.0-x64.exe) from GitHub Releases. No Node.js installation is needed to use a packaged build. On first launch, click **Start learning**.
+Download the [portable executable](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Portable-0.1.1-x64.exe) or [installer](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Setup-0.1.1-x64.exe) from GitHub Releases. No Node.js installation is needed to use a packaged build. On first launch, click **Start learning**.
 
 ![English definition](docs/images/word-en.png)
 
@@ -60,6 +64,8 @@ The native helper reads selection after a mouse drag or double-click; it does no
 
 ## Data and privacy
 
+Legacy cached entries are enriched with English synonyms on their next online lookup. Existing definitions/translations are reused, and saved vocabulary is preserved. Close the old version through the tray before opening the new executable; use the same `--buddy-data` directory if one was specified.
+
 Normal app data is in `%APPDATA%\english-buddy`: `buddy.json` (preferences and saved vocabulary) and `cache.json` (lookup cache). To use another data directory, including with a portable build, launch with `--buddy-data="C:\path\to\data"`. Data is local JSON, without encryption. Saved vocabulary remains available in the list without a network connection. Cached complete lookups work with **Online vocabulary** disabled. Clearing the lookup cache leaves saved words intact.
 
 The online services receive only a word validated as 1–64 ASCII letters, optionally separated by apostrophes or hyphens. Phrases, email addresses, numbers, non-English selections and password fields identified by UI Automation are ignored. No selected text is logged by the normal application. Providers naturally receive the network IP address.
@@ -67,6 +73,8 @@ The online services receive only a word validated as 1–64 ASCII letters, optio
 Autostart is off by default and can be enabled in a packaged build. Hiding Buddy also pauses automatic selection reading until it is shown again. Exit from the tray to stop the app completely.
 
 ## Vocabulary sources and licensing
+
+- [Datamuse API](https://www.datamuse.com/api/): dedicated English WordNet synonyms via `rel_syn`, ordered using frequency metadata. Only a validated word is sent. Attribution appears on the card. The provider has announced that access may require a key in 2027; dictionary synonyms remain a fallback. Its documentation describes a temporary query log discarded at the end of the day.
 
 - [Free Dictionary API](https://dictionaryapi.dev/): real English definitions, part of speech, phonetics, examples and synonyms. Its response-provided license is linked on the card, often [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The word's Wiktionary page is linked for attribution/history.
 - [Wiktionary](https://en.wiktionary.org/): primary Russian translations and synonym templates from the English section, via the [MediaWiki revisions API](https://www.mediawiki.org/wiki/API:Revisions). Current text is used under [CC BY-SA 4.0](https://en.wiktionary.org/wiki/Wiktionary:Copyrights); the source entry is linked on each card. Stress marks are removed, and translation terms are joined with semicolons.

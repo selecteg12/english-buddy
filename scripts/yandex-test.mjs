@@ -39,8 +39,10 @@ try {
   expect(selected).toBe('consistent');
   await expect.poll(() => popup.evaluate(async () => (await window.buddy.getState()).popup.word), { timeout: 10000 }).toBe('consistent');
   await expect.poll(() => popup.evaluate(async () => (await window.buddy.getState()).popup.status), { timeout: 25000 }).toBe('ready');
+  await expect(popup.getByRole('region', { name: 'English synonyms' }).locator('.synonyms span').first()).toBeVisible();
   await page.screenshot({ path: resolve(artifactRoot, 'yandex-selection.png') });
   report.push(`PASS: automatic word selection in installed Yandex Browser, isolated profile, ${accessibility ? 'explicit accessibility flags' : 'default accessibility settings'}`);
   report.push('PASS: selected consistent -> real vocabulary popup');
+  report.push('PASS: selected word automatically displays English synonyms');
 } catch (error) { report.push(`FAIL: ${error.stack || error.message}`); process.exitCode = 1; }
 finally { if (browser) await browser.close(); if (app) await app.close(); await writeFile(resolve(artifactRoot, 'yandex-test.txt'), report.join('\n') + '\n'); console.log(report.join('\n')); }

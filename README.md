@@ -4,15 +4,19 @@
 
 [Скачать приложение](https://github.com/selecteg12/english-buddy/releases/latest) · [English documentation](README.en.md) · [Отчёт о проверке](VERIFICATION.md) · [Лицензия](LICENSE)
 
-**Платформа:** Windows 10/11, x64. **Версия:** MVP 0.1.0. **Язык интерфейса:** английский. Регистрация и платная подписка не нужны.
+**Платформа:** Windows 10/11, x64. **Версия:** MVP 0.1.1. **Язык интерфейса:** английский. Регистрация и платная подписка не нужны.
+
+**При выделении слова первым показывается блок English synonyms.** Синонимы всегда на английском, независимо от выбора RU / EN. Перевод или определение находятся ниже. Подробности обновления — [CHANGELOG.md](CHANGELOG.md).
+
+В версии 0.1.1 синонимы имеют крупный шрифт 18 px и более тёмный цвет. Карточка расширена до 450 × 520; увеличены основной текст, подписи, переключатель режимов и текст настроек.
 
 ## Скачать и запустить
 
-Готовые сборки находятся в [GitHub Releases](https://github.com/selecteg12/english-buddy/releases/tag/v0.1.0):
+Готовые сборки находятся в [GitHub Releases](https://github.com/selecteg12/english-buddy/releases/tag/v0.1.1):
 
-- **[English-Buddy-Portable-0.1.0-x64.exe](https://github.com/selecteg12/english-buddy/releases/download/v0.1.0/English-Buddy-Portable-0.1.0-x64.exe)** — запуск без установки.
-- **[English-Buddy-Setup-0.1.0-x64.exe](https://github.com/selecteg12/english-buddy/releases/download/v0.1.0/English-Buddy-Setup-0.1.0-x64.exe)** — установщик с выбором папки и ярлыками.
-- **[SHA256SUMS.txt](https://github.com/selecteg12/english-buddy/releases/download/v0.1.0/SHA256SUMS.txt)** — контрольные суммы файлов.
+- **[English-Buddy-Portable-0.1.1-x64.exe](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Portable-0.1.1-x64.exe)** — запуск без установки.
+- **[English-Buddy-Setup-0.1.1-x64.exe](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Setup-0.1.1-x64.exe)** — установщик с выбором папки и ярлыками.
+- **[SHA256SUMS.txt](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/SHA256SUMS.txt)** — контрольные суммы файлов.
 
 Для готового `.exe` не нужны Node.js, npm, сервер разработки или отдельный .NET SDK. Нативный помощник использует .NET Framework 4.x; в обычных установках Windows 10/11 есть .NET Framework 4.8.
 
@@ -27,7 +31,7 @@
 Проверить скачанный файл в PowerShell:
 
 ```powershell
-Get-FileHash -LiteralPath '.\English-Buddy-Portable-0.1.0-x64.exe' -Algorithm SHA256
+Get-FileHash -LiteralPath '.\English-Buddy-Portable-0.1.1-x64.exe' -Algorithm SHA256
 ```
 
 Сравните результат с соответствующей строкой `SHA256SUMS.txt`.
@@ -140,7 +144,7 @@ English Buddy **не нажимает Ctrl+C автоматически, не з
 Можно выбрать другую папку, например для portable-режима:
 
 ```powershell
-& '.\English-Buddy-Portable-0.1.0-x64.exe' '--buddy-data=C:\EnglishBuddyData'
+& '.\English-Buddy-Portable-0.1.1-x64.exe' '--buddy-data=C:\EnglishBuddyData'
 ```
 
 Сохранённый словарь доступен без сети. При выключенном Online vocabulary можно получать полные ранее кэшированные значения; для нового слова требуется интернет. Кэш хранит до 500 слов с обычным сроком 7 дней. Очистка кэша не удаляет сохранённую лексику.
@@ -150,12 +154,17 @@ English Buddy **не нажимает Ctrl+C автоматически, не з
 - **[Free Dictionary API](https://dictionaryapi.dev/)** — английские определения, части речи, IPA, примеры и синонимы. В карточке указаны источник и его лицензия, часто [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 - **[Wiktionary](https://en.wiktionary.org/)** — основной источник русских переводов и дополнительный источник синонимов из английского раздела статьи. Используется [MediaWiki API](https://www.mediawiki.org/wiki/API:Revisions). Текущий текст — [CC BY-SA 4.0](https://en.wiktionary.org/wiki/Wiktionary:Copyrights); ссылка на статью и лицензию есть в карточке.
 - **[MyMemory](https://mymemory.translated.net/)** — запасной переводчик. Действуют [условия](https://mymemory.translated.net/doc/en/tos.php), [спецификация API](https://mymemory.translated.net/doc/spec.php) и [лимиты](https://mymemory.translated.net/doc/usagelimits.php).
+- **[Datamuse API](https://www.datamuse.com/api/)** — дополнительный источник английских синонимов через отношение WordNet `rel_syn`. Результаты ранжируются по метаданным частоты употребления. Отправляется только проверенное слово, без текста страницы. Источник указан в карточке. По уведомлению провайдера, в 2027 году условия доступа могут потребовать API-ключ; при недоступности сервиса используются словарные источники. Провайдер сообщает о временном журнале запросов, удаляемом в конце дня.
 
 Платные ключи и вымышленные данные не используются. Качество зависит от источников: слово может иметь несколько значений, а переводы и синонимы могут относиться к разным значениям. Карточка показывает одно английское определение. Это словарный текст, без упрощения нейросетью. Отсутствующие поля и временные ошибки обозначаются явно.
 
 При форматировании русских переводов убираются знаки ударения, отдельные варианты соединяются точкой с запятой. Словарный текст и текст на скриншотах сохраняют лицензии источников; MIT-лицензия кода их не заменяет. Флаг и иконка нарисованы локально из геометрических фигур.
 
 ## Разработка из исходников
+
+### Обновление со старой версии
+
+Закройте старую версию через **Quit English Buddy** в трее и запустите новый `.exe`. При использовании обычной папки данных настройки и сохранённые слова остаются на месте. Старый кэш дополняется английскими синонимами при следующем онлайн-поиске; очищать его вручную не требуется. Если использовался `--buddy-data`, передайте новой версии ту же папку.
 
 Нужны **Windows x64**, **Node.js 24+**, npm и C#-компилятор .NET Framework 4.x по стандартному пути Windows. Отдельный .NET SDK не нужен.
 
@@ -245,7 +254,7 @@ Renderer работает с `contextIsolation: true`, `sandbox: true`, `nodeInt
 ## Что проверено
 
 - TypeScript и ESLint — успешно.
-- **36 модульных тестов** — успешно.
+- **46 модульных тестов** — успешно.
 - Компиляция C# и production-сборка — успешно.
 - Реальные словарные запросы, RU/EN, сохранение и поиск, восстановление режима и словаря после перезапуска — успешно.
 - Выделение в RichTextBox, горячая клавиша и пропуск поля пароля — успешно.

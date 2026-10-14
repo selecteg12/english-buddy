@@ -1,0 +1,23 @@
+.popup-synonyms {
+  border-bottom: 1px solid #e8ebf2;
+  padding-bottom: 17px;
+  margin-bottom: 18px;
+}
+.popup-synonyms .meaning-label {
+  color: #5c749a;
+  font-size: 8px;
+  margin-bottom: 11px;
+}
+.popup-synonyms .synonyms {
+  gap: 7px;
+}
+.popup-synonyms .synonyms span {
+  background: #edf2fa;
+  border-color: #dce5f3;
+  color: #314e7b;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 6px 10px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}

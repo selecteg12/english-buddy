@@ -12,6 +12,31 @@ export type DictionaryData = Pick<Vocabulary, 'definition' | 'partOfSpeech' | 's
 export interface TranslationData { text: string; sources: Vocabulary['sources']; synonyms?: string[] }
 export interface DictionaryProvider { lookup(word: string): Promise<DictionaryData> }
 export interface TranslationProvider { translate(word: string): Promise<TranslationData> }
+export interface SynonymData { synonyms: string[]; sources: Vocabulary['sources'] }
+export interface SynonymProvider { lookup(word: string): Promise<SynonymData> }
+
+export function englishSynonyms(words: string[], selected = ''): string[] {
+  const normalized = words.map(word => word.trim().replace(/[‘’]/g, "'").replace(/\s+/g, ' ').toLowerCase());
+  return [...new Set(normalized)].filter(word => word !== selected && word.length <= 80 && /^[a-z]+(?:[ '-][a-z]+)*$/.test(word)).slice(0, 8);
+}
+
+export function parseSynonyms(input: unknown, selected: string): SynonymData {
+  const entries = z.array(z.object({ word: z.string().max(80), tags: z.array(z.string().max(100)).max(30).optional() })).max(1000).parse(input);
+  const frequency = (tags: string[] = []) => {
+    const value = Number(tags.find(tag => tag.startsWith('f:'))?.slice(2) ?? 0);
+    return Number.isFinite(value) && value >= 0 ? value : 0;
+  };
+  const ordered = [...entries].sort((a, b) => frequency(b.tags) - frequency(a.tags));
+  return { synonyms: englishSynonyms(ordered.map(entry => entry.word), selected), sources: [{ name: 'Datamuse / WordNet synonyms', url: 'https://www.datamuse.com/api/' }] };
+}
+
+export class DatamuseSynonyms implements SynonymProvider {
+  constructor(private fetcher: typeof fetch = fetch) {}
+  async lookup(word: string): Promise<SynonymData> {
+    const selected = requireWord(word);
+    return parseSynonyms(await requestJson(`https://api.datamuse.com/words?rel_syn=${encodeURIComponent(selected)}&max=24&md=f`, this.fetcher), selected);
+  }
+}
 
 export function parseDictionary(input: unknown): DictionaryData {
   const entries = dictionarySchema.parse(input);
@@ -23,7 +48,7 @@ export function parseDictionary(input: unknown): DictionaryData {
   const definition = meaning.definitions[0];
   return {
     definition: definition.definition, partOfSpeech: meaning.partOfSpeech.slice(0, 60),
-    synonyms: [...new Set([...(meaning.synonyms ?? []), ...meaning.definitions.flatMap(d => d.synonyms ?? [])])].filter(s => s.length <= 80).slice(0, 8),
+    synonyms: englishSynonyms([...(meaning.synonyms ?? []), ...meaning.definitions.flatMap(d => d.synonyms ?? [])], requireWord(entry.word)),
     ipa: (entry.phonetic ?? entry.phonetics?.find(p => p.text)?.text ?? '').slice(0, 150), example: definition.example ?? '',
     sources: [{ name: 'Free Dictionary / Wiktionary', url: 'https://dictionaryapi.dev/', license: entry.license?.name.slice(0, 120), licenseUrl: entry.license?.url },
       { name: 'Wiktionary entry', url: `https://en.wiktionary.org/wiki/${encodeURIComponent(requireWord(entry.word))}` }]
