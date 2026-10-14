@@ -1,0 +1,13 @@
+node_modules/
+dist/
+release/
+artifacts/
+native-bin/
+.dev-data/
+*.log
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.key

@@ -1,0 +1,28 @@
+appId: com.englishbuddy.desktop
+productName: English Buddy
+directories:
+  output: release
+files:
+  - dist/**/*
+  - package.json
+  - README.md
+  - LICENSE
+extraResources:
+  - from: native-bin/SelectionHelper.exe
+    to: native/SelectionHelper.exe
+  - from: assets/icon.png
+    to: icon.png
+asar: true
+npmRebuild: false
+win:
+  icon: assets/icon.ico
+  signExecutable: false
+nsis:
+  artifactName: English-Buddy-Setup-${version}-${arch}.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+portable:
+  artifactName: English-Buddy-Portable-${version}-${arch}.${ext}

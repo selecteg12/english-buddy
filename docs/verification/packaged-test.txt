@@ -1,0 +1,3 @@
+PASS: packaged Windows executable launches without a development server
+PASS: bundled native helper launches; sandbox and context isolation enabled
+PASS: real English/Russian vocabulary in packaged app

@@ -1,0 +1,8 @@
+PASS: launch, onboarding, floating windows stay on top and do not take focus
+PASS: real online definition and Russian translation
+PASS: mode switching, saving, searching vocabulary
+PASS: automatic selection via a real Windows RichTextBox mouse selection
+PASS: Ctrl+Shift+E retrieves Windows selection
+PASS: password input ignored
+PASS: mode and vocabulary persist after app restart
+PASS: no renderer JavaScript errors
