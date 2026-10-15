@@ -1,16 +1,18 @@
 # English Buddy
 
-[Download Windows builds](https://github.com/selecteg12/english-buddy/releases/tag/v0.1.1) · [Verification report](VERIFICATION.md) · [License](LICENSE)
+[Download Windows builds](https://github.com/selecteg12/english-buddy/releases/tag/v0.1.2) · [Verification report](VERIFICATION.md) · [License](LICENSE)
 
-Windows 10/11 x64 desktop companion for learning English while reading other apps. Electron + React + TypeScript, with a separate C# UI Automation helper. Current release: **0.1.1**. Interface language: English.
+Windows 10/11 x64 desktop companion for learning English while reading other apps. Electron + React + TypeScript, with a separate C# UI Automation helper. Current release: **0.1.2**. Interface language: English.
 
-**English synonyms appear first whenever you select a word, in both RU and EN modes.** Translation or definition follows below. See [CHANGELOG.md](CHANGELOG.md) for version 0.1.1.
+**English synonyms appear first whenever you select a word, in both RU and EN modes.** Translation or definition follows below. See [CHANGELOG.md](CHANGELOG.md) for version 0.1.2.
 
 Synonyms use larger 18 px text and stronger contrast. The popup is 450 × 520, with larger labels, meanings, controls and preferences text.
 
+**Results appear independently:** a ready Russian translation is displayed immediately while definitions or synonyms continue loading. English definitions have a Wiktionary fallback, and translations use an early MyMemory fallback when Wiktionary is slow. Healthy cached fields remain available even when another provider fails.
+
 ## Use the app
 
-Download the [portable executable](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Portable-0.1.1-x64.exe) or [installer](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Setup-0.1.1-x64.exe) from GitHub Releases. No Node.js installation is needed to use a packaged build. On first launch, click **Start learning**.
+Download the [portable executable](https://github.com/selecteg12/english-buddy/releases/download/v0.1.2/English-Buddy-Portable-0.1.2-x64.exe) or [installer](https://github.com/selecteg12/english-buddy/releases/download/v0.1.2/English-Buddy-Setup-0.1.2-x64.exe) from GitHub Releases. No Node.js installation is needed to use a packaged build. On first launch, click **Start learning**.
 
 ![English definition](docs/images/word-en.png)
 
@@ -44,6 +46,7 @@ npm start               # Run production source build
 npm run test:desktop    # Electron, real network APIs, own Windows test fixture
 node scripts/live-check.mjs
 node scripts/yandex-test.mjs  # Installed Yandex, isolated test profile
+node scripts/resilience-test.mjs  # Blocked dictionary, progressive UI and HTTP CONNECT proxy
 npm run package         # Windows x64 NSIS installer and portable exe
 ```
 
@@ -55,7 +58,7 @@ Tests may briefly show isolated windows to verify native selections. Yandex test
 - `src/preload`: explicit application actions and removable state subscriptions.
 - `src/renderer`: animated original SVG flag, word card, English preferences, saved vocabulary.
 - `src/native/windows/SelectionHelper.cs`: low-level mouse-release event, 180 ms debounce, UI Automation TextPattern on an MTA worker, protected input checks, explicit shortcut requests and local speech.
-- `src/services`: provider interfaces, structured response validation, timeout/retry, per-word concurrent deduplication, 20 new lookups/minute, at most 3 concurrent vocabulary lookups, 500-word cache with 7-day expiry.
+- `src/services`: independent field updates, early source fallbacks, structured response validation, a four-second total deadline per endpoint including retries, per-word concurrent deduplication, 20 new lookups/minute, at most 3 concurrent vocabulary lookups, 500-word cache with 7-day expiry.
 - `src/storage`: validated local settings and saved words, atomic replacement writes, preservation of damaged data files.
 - `src/shared`: schemas, single-word validation, screen geometry.
 - `tests`: validation, providers, cache, errors, settings and saved vocabulary.
@@ -68,6 +71,16 @@ Legacy cached entries are enriched with English synonyms on their next online lo
 
 Normal app data is in `%APPDATA%\english-buddy`: `buddy.json` (preferences and saved vocabulary) and `cache.json` (lookup cache). To use another data directory, including with a portable build, launch with `--buddy-data="C:\path\to\data"`. Data is local JSON, without encryption. Saved vocabulary remains available in the list without a network connection. Cached complete lookups work with **Online vocabulary** disabled. Clearing the lookup cache leaves saved words intact.
 
+Healthy fields from partial lookups are cached too. Offline mode can display those available fields; the next online lookup requests only missing fields. A failed definition no longer forces a working translation to be downloaded again.
+
+## VPN and proxy connections
+
+Vocabulary requests use [Electron's Chromium network stack](https://www.electronjs.org/docs/latest/api/net), which supports Windows system proxy settings and PAC configuration. A desktop VPN using VLESS, Hysteria or another protocol should route Buddy through its Windows proxy or TUN configuration. Buddy does not configure or switch your VPN. If the VPN uses per-app routing, include English Buddy and its network subprocess. TLS certificate verification remains enabled.
+
+Fallbacks begin after 350 ms if the preferred service has not responded; an immediate error starts the fallback immediately. The first valid response wins. Each endpoint has a four-second total timeout, including a short retry for transient failures. The card updates as each field arrives, so a blocked dictionary does not hide an available translation. A missing meaning has a **Retry lookup** button.
+
+The proxy regression test blocks the primary dictionary, deliberately delays its fallback, and routes real requests through an isolated HTTP CONNECT proxy. In the recorded run, the Russian translation appeared in 739 ms while the deliberately delayed English definition appeared in 2,083 ms. These are test measurements, not a guaranteed response time for every VPN or word.
+
 The online services receive only a word validated as 1–64 ASCII letters, optionally separated by apostrophes or hyphens. Phrases, email addresses, numbers, non-English selections and password fields identified by UI Automation are ignored. No selected text is logged by the normal application. Providers naturally receive the network IP address.
 
 Autostart is off by default and can be enabled in a packaged build. Hiding Buddy also pauses automatic selection reading until it is shown again. Exit from the tray to stop the app completely.
@@ -77,10 +90,10 @@ Autostart is off by default and can be enabled in a packaged build. Hiding Buddy
 - [Datamuse API](https://www.datamuse.com/api/): dedicated English WordNet synonyms via `rel_syn`, ordered using frequency metadata. Only a validated word is sent. Attribution appears on the card. The provider has announced that access may require a key in 2027; dictionary synonyms remain a fallback. Its documentation describes a temporary query log discarded at the end of the day.
 
 - [Free Dictionary API](https://dictionaryapi.dev/): real English definitions, part of speech, phonetics, examples and synonyms. Its response-provided license is linked on the card, often [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The word's Wiktionary page is linked for attribution/history.
-- [Wiktionary](https://en.wiktionary.org/): primary Russian translations and synonym templates from the English section, via the [MediaWiki revisions API](https://www.mediawiki.org/wiki/API:Revisions). Current text is used under [CC BY-SA 4.0](https://en.wiktionary.org/wiki/Wiktionary:Copyrights); the source entry is linked on each card. Stress marks are removed, and translation terms are joined with semicolons.
+- [Wiktionary](https://en.wiktionary.org/): primary Russian translations and synonym templates from the English section, via the [MediaWiki revisions API](https://www.mediawiki.org/wiki/API:Revisions), plus real English definitions from its REST definition endpoint as a fallback for Free Dictionary. Definition markup is converted to plain text. Current text is used under [CC BY-SA 4.0](https://en.wiktionary.org/wiki/Wiktionary:Copyrights); the source entry is linked on each card. Stress marks are removed, and translation terms are joined with semicolons.
 - [MyMemory](https://mymemory.translated.net/): translation fallback when a Russian Wiktionary entry is missing or cannot be parsed. See its [API specification](https://mymemory.translated.net/doc/spec.php), [usage limits](https://mymemory.translated.net/doc/usagelimits.php) and [terms](https://mymemory.translated.net/doc/en/tos.php). No invented API key, email address, or paid service is used. Quota failures are reported.
 
-Dictionary text and translations remain under their source licenses; the app's own MIT license does not replace those licenses. Providers can contain mistakes. Words may have several meanings; Russian translations and synonyms can span those meanings, while the card shows one English definition. Definitions are actual dictionary entries, without AI simplification. If a field is unavailable, the card says so; no made-up data is substituted. Partial results are usable but not cached as complete entries.
+Dictionary text and translations remain under their source licenses; the app's own MIT license does not replace those licenses. Providers can contain mistakes. Words may have several meanings; Russian translations and synonyms can span those meanings, while the card shows one English definition. Definitions are actual dictionary entries, without AI simplification. If a field is unavailable, the card says so; no made-up data is substituted. Partial results retain their available fields and are retried for missing fields.
 
 The flag and app icon are drawn locally from geometric shapes. Pronunciation uses the installed Windows voice; an English voice is recommended. No remote audio download is required.
 

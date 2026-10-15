@@ -1,0 +1,4 @@
+PASS: Russian translation is visible while the English definition is still loading
+PASS: real English definition appears through Wiktionary with the primary dictionary blocked
+PASS: vocabulary requests use the configured HTTP CONNECT proxy with normal TLS validation
+TIMING: Russian translation 739 ms; deliberately delayed English fallback 2083 ms

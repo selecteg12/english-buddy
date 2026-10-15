@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { LocalStore } from '../storage/store';
 import { VocabularyCache } from '../services/cache';
-import { DatamuseSynonyms, FreeDictionary, WiktionaryTranslation } from '../services/providers';
+import { DatamuseSynonyms, FreeDictionary, MyMemory, ResilientDictionary, WiktionaryDictionary, WiktionaryTranslation } from '../services/providers';
 import { VocabularyService } from '../services/vocabulary';
 import { settingsPatchSchema, type AppState, type PopupState } from '../shared/schema';
 import { allowedSource, requireWord } from '../shared/validation';
@@ -19,7 +19,7 @@ if (!locked) app.quit();
 
 let store: LocalStore, windows: BuddyWindows, service: VocabularyService, helper: NativeSelection, tray: Tray;
 let nativeStatus = 'Starting Windows selection…', hidden = false, shortcutAvailable = false;
-let popup: PopupState = { status: 'idle', word: '', entry: null, message: '', saved: false };
+let popup: PopupState = { status: 'idle', word: '', entry: null, message: '', saved: false, pending: [] };
 let dismiss: ReturnType<typeof setTimeout> | undefined, lookupVersion = 0, lastWord = '', lastTime = 0;
 let quitting = false;
 
@@ -44,24 +44,28 @@ async function lookup(input: unknown, explicit = false) {
   lastWord = word; lastTime = Date.now();
   const version = ++lookupVersion;
   clearTimeout(dismiss);
-  popup = { status: 'loading', word, entry: null, message: '', saved: false };
+  popup = { status: 'loading', word, entry: null, message: '', saved: false, pending: ['definition', 'translation', 'synonyms'] };
   broadcast();
   if (hidden) { hidden = false; windows.flag.showInactive(); applyMonitoring(); }
   await windows.showPopup();
   if (version !== lookupVersion) return;
   try {
-    const entry = await service.lookup(word, settings.online);
+    const entry = await service.lookup(word, settings.online, (partial, pending) => {
+      if (version !== lookupVersion) return;
+      popup = { status: 'loading', word, entry: partial, pending, message: '', saved: store.snapshot().words.some(item => item.word === word) };
+      broadcast();
+    });
     if (version !== lookupVersion) return;
-    popup = { status: 'ready', word, entry, message: '', saved: store.snapshot().words.some(item => item.word === word) };
+    popup = { status: 'ready', word, entry, message: '', saved: store.snapshot().words.some(item => item.word === word), pending: [] };
   } catch (error) {
     if (version !== lookupVersion) return;
-    popup = { status: 'error', word, entry: null, message: error instanceof Error ? error.message : 'Lookup failed. Please try again.', saved: false };
+    popup = { status: 'error', word, entry: null, message: error instanceof Error ? error.message : 'Lookup failed. Please try again.', saved: false, pending: [] };
   }
   broadcast(); timer();
 }
 function missing(protectedField: boolean) {
   ++lookupVersion;
-  popup = { status: 'error', word: '', entry: null, saved: false, message: protectedField ? 'Protected input: selection was ignored.' : 'This app did not expose a selected word. Copy one English word, then click “Use copied word”.' };
+  popup = { status: 'error', word: '', entry: null, saved: false, pending: [], message: protectedField ? 'Protected input: selection was ignored.' : 'This app did not expose a selected word. Copy one English word, then click “Use copied word”.' };
   broadcast(); void windows.showPopup(); timer();
 }
 function applyMonitoring() {
@@ -145,7 +149,8 @@ async function start() {
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
   store = new LocalStore(app.getPath('userData'));
-  service = new VocabularyService(new FreeDictionary(), new WiktionaryTranslation(), new VocabularyCache(join(app.getPath('userData'), 'cache.json')), new DatamuseSynonyms());
+  const vocabularyFetch: typeof fetch = (input, init) => net.fetch(input instanceof URL ? input.href : input, { ...init, credentials: 'omit' });
+  service = new VocabularyService(new ResilientDictionary(new FreeDictionary(vocabularyFetch), new WiktionaryDictionary(vocabularyFetch)), new WiktionaryTranslation(new MyMemory(vocabularyFetch), vocabularyFetch), new VocabularyCache(join(app.getPath('userData'), 'cache.json')), new DatamuseSynonyms(vocabularyFetch));
   windows = new BuddyWindows((x, y) => store.position(x, y));
   helper = new NativeSelection(join(app.isPackaged ? process.resourcesPath : app.getAppPath(), app.isPackaged ? 'native/SelectionHelper.exe' : 'native-bin/SelectionHelper.exe'), (word, explicit) => { void lookup(word, explicit); }, value => { nativeStatus = value; broadcast(); }, missing);
   registerIpc();

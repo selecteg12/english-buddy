@@ -44,7 +44,7 @@ export function SettingsPage({ state, initialPage }: { state: AppState; initialP
           <SettingRow icon={<MousePointer2 size={19} />} title="Watch text selections" detail="Look up a word when you finish highlighting it."><Switch label="Watch text selections" checked={settings.monitoring} onChange={monitoring => update({ monitoring })} /></SettingRow>
           <SettingRow icon={<Keyboard size={19} />} title="Quick lookup shortcut" detail="Ask Windows for the current selection."><div className="row-controls"><kbd>Ctrl ⇧ E</kbd><Switch label="Quick lookup shortcut" checked={settings.shortcut} onChange={shortcut => update({ shortcut })} /></div></SettingRow>
           <SettingRow icon={<Pause size={19} />} title="Keep the popup around" detail="Auto-close after a little reading time."><select aria-label="Popup timeout" value={settings.popupTimeout} onChange={e => update({ popupTimeout: Number(e.target.value) })}>{[0, 10, 20, 30, 60, 120].map(seconds => <option key={seconds} value={seconds}>{seconds ? `${seconds} seconds` : 'Until I close it'}</option>)}</select></SettingRow>
-          <SettingRow icon={<Wifi size={19} />} title="Online vocabulary" detail="Datamuse + dictionaries. Only a validated word is sent."><Switch label="Online vocabulary" checked={settings.online} onChange={online => update({ online })} /></SettingRow>
+          <SettingRow icon={<Wifi size={19} />} title="Online vocabulary" detail="Uses Windows proxy settings. Only a validated word is sent."><Switch label="Online vocabulary" checked={settings.online} onChange={online => update({ online })} /></SettingRow>
         </section>
         <div className="section-title"><span>03</span>ON YOUR DESKTOP</div>
         <section className="settings-card">

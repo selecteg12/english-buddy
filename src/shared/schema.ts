@@ -35,7 +35,9 @@ export const savedWordSchema = vocabularySchema.extend({ savedAt: z.string().dat
 export type SavedWord = z.infer<typeof savedWordSchema>;
 export const storeSchema = z.object({ settings: settingsSchema.default(() => settingsSchema.parse({})), words: z.array(savedWordSchema).max(10000).default([]) });
 export type StoreData = z.infer<typeof storeSchema>;
-export type PopupState = { status: 'idle' | 'loading' | 'ready' | 'error'; word: string; entry: Vocabulary | null; message: string; saved: boolean };
+export type LookupField = 'definition' | 'translation' | 'synonyms';
+export type LookupUpdate = (entry: Vocabulary, pending: LookupField[]) => void;
+export type PopupState = { status: 'idle' | 'loading' | 'ready' | 'error'; word: string; entry: Vocabulary | null; message: string; saved: boolean; pending: LookupField[] };
 export type AppState = { settings: Settings; words: SavedWord[]; popup: PopupState; nativeStatus: string; shortcutAvailable: boolean; hidden: boolean; storageWarning: string };
 export interface BuddyApi {
   getState(): Promise<AppState>;

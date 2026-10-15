@@ -98,11 +98,11 @@ describe('English synonyms', () => {
     const service = new VocabularyService({ lookup: vi.fn().mockRejectedValue(new Error()) }, { translate: vi.fn().mockRejectedValue(new Error()) }, new VocabularyCache(), { lookup: vi.fn().mockResolvedValue({ synonyms: ['uniform'], sources: [] }) });
     const result = await service.lookup('consistent'); expect(result.synonyms).toEqual(['uniform']); expect(result.definition).toBe(''); expect(result.translation).toBe(''); expect(result.warnings).toHaveLength(2);
   });
-  it('reports synonym failure without poisoning the cache and retries on the next lookup', async () => {
+  it('keeps healthy cached fields and retries missing synonyms on the next lookup', async () => {
     const synonyms = vi.fn().mockRejectedValueOnce(new Error()).mockResolvedValue({ synonyms: ['uniform'], sources: [] });
     const cache = new VocabularyCache();
     const service = new VocabularyService({ lookup: vi.fn().mockResolvedValue({ ...dictionary, synonyms: [] }) }, { translate: vi.fn().mockResolvedValue(translated) }, cache, { lookup: synonyms });
-    const first = await service.lookup('consistent'); expect(first.warnings.join(' ')).toContain('English synonyms'); expect(cache.get('consistent')).toBeUndefined();
+    const first = await service.lookup('consistent'); expect(first.warnings.join(' ')).toContain('English synonyms'); expect(cache.get('consistent')).toMatchObject({ translation: 'последовательный', synonymsChecked: false });
     expect((await service.lookup('consistent')).synonyms).toEqual(['uniform']);
   });
 });
