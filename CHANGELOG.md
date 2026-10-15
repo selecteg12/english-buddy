@@ -1,15 +1,11 @@
-# Изменения
+# Changes
 
-## 0.1.1 — 15 октября 2026
+## 0.1.1 — 15 October 2026
 
-- Английские синонимы отображаются первыми в карточке выделенного слова, в режимах RU и EN.
-- Шрифт синонимов увеличен до 18 px, усилен контраст. Карточка увеличена до 450 × 520, увеличены подписи, определения, кнопки и текст настроек.
-- Добавлен отдельный источник Datamuse / WordNet; более употребительные синонимы показываются раньше.
-- Синонимы словарных источников объединяются без дубликатов; неанглийские значения и само исходное слово исключаются.
-- Старый кэш дополняется синонимами при следующем онлайн-поиске без повторной загрузки готовых перевода и определения.
-- Сохранённые слова и настройки продолжают работать после обновления.
-- При сбое дополнительного сервиса используются синонимы словаря. Реальные синонимы доступны и при временном отказе сервисов перевода/определений.
-
-## 0.1.0
-
-Первая Windows x64 MVP-версия: плавающий флаг, UI Automation, перевод/определение, горячая клавиша, локальный словарь и настройки. Созданы portable и установщик; проверено автоматическое выделение в Яндекс Браузере.
+- English synonyms appear first in the selected-word card in both RU and EN modes.
+- Synonyms use 18 px text and stronger contrast. The card is 450 × 520, with larger labels, meanings, controls and preferences text.
+- A dedicated Datamuse / WordNet provider supplies English synonyms, ordered using frequency metadata.
+- Synonyms from dictionary sources are combined without duplicates. Non-English terms and the selected word itself are excluded.
+- Existing cached entries are enriched on their next online lookup without requesting their definitions and translations again.
+- Saved vocabulary and preferences are preserved when upgrading.
+- Dictionary synonyms provide a fallback when the additional service fails. Real synonyms remain available if definition or translation services are temporarily unavailable.

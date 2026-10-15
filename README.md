@@ -1,281 +1,103 @@
 # English Buddy
 
-**Плавающий помощник для изучения английского в Windows.** Выделите английское слово в другом приложении — рядом с небольшим британским флагом появится русский перевод или английское определение. Сохраняйте новые слова в локальный словарь и возвращайтесь к ним позже.
+[Download Windows builds](https://github.com/selecteg12/english-buddy/releases/tag/v0.1.1) · [Verification report](VERIFICATION.md) · [License](LICENSE)
 
-[Скачать приложение](https://github.com/selecteg12/english-buddy/releases/latest) · [English documentation](README.en.md) · [Отчёт о проверке](VERIFICATION.md) · [Лицензия](LICENSE)
+Windows 10/11 x64 desktop companion for learning English while reading other apps. Electron + React + TypeScript, with a separate C# UI Automation helper. Current release: **0.1.1**. Interface language: English.
 
-**Платформа:** Windows 10/11, x64. **Версия:** MVP 0.1.1. **Язык интерфейса:** английский. Регистрация и платная подписка не нужны.
+**English synonyms appear first whenever you select a word, in both RU and EN modes.** Translation or definition follows below. See [CHANGELOG.md](CHANGELOG.md) for version 0.1.1.
 
-**При выделении слова первым показывается блок English synonyms.** Синонимы всегда на английском, независимо от выбора RU / EN. Перевод или определение находятся ниже. Подробности обновления — [CHANGELOG.md](CHANGELOG.md).
+Synonyms use larger 18 px text and stronger contrast. The popup is 450 × 520, with larger labels, meanings, controls and preferences text.
 
-В версии 0.1.1 синонимы имеют крупный шрифт 18 px и более тёмный цвет. Карточка расширена до 450 × 520; увеличены основной текст, подписи, переключатель режимов и текст настроек.
+## Use the app
 
-## Скачать и запустить
+Download the [portable executable](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Portable-0.1.1-x64.exe) or [installer](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Setup-0.1.1-x64.exe) from GitHub Releases. No Node.js installation is needed to use a packaged build. On first launch, click **Start learning**.
 
-Готовые сборки находятся в [GitHub Releases](https://github.com/selecteg12/english-buddy/releases/tag/v0.1.1):
-
-- **[English-Buddy-Portable-0.1.1-x64.exe](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Portable-0.1.1-x64.exe)** — запуск без установки.
-- **[English-Buddy-Setup-0.1.1-x64.exe](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/English-Buddy-Setup-0.1.1-x64.exe)** — установщик с выбором папки и ярлыками.
-- **[SHA256SUMS.txt](https://github.com/selecteg12/english-buddy/releases/download/v0.1.1/SHA256SUMS.txt)** — контрольные суммы файлов.
-
-Для готового `.exe` не нужны Node.js, npm, сервер разработки или отдельный .NET SDK. Нативный помощник использует .NET Framework 4.x; в обычных установках Windows 10/11 есть .NET Framework 4.8.
-
-1. Скачайте portable-файл или установщик.
-2. Запустите English Buddy. При первом запуске откроется окно настроек.
-3. Нажмите **Start learning**. На рабочем столе останется небольшой флаг.
-4. Выделите одно английское слово мышью или двойным щелчком, например `consistent`.
-5. Выберите **RU Translation** или **EN Definition**. Нажмите закладку, чтобы сохранить слово.
-
-Сборки MVP не имеют цифровой подписи, поэтому Windows SmartScreen может показать предупреждение. Проверяйте источник загрузки и контрольную сумму. Приложение не отключает защиту Windows и не меняет настройки безопасности.
-
-Проверить скачанный файл в PowerShell:
-
-```powershell
-Get-FileHash -LiteralPath '.\English-Buddy-Portable-0.1.1-x64.exe' -Algorithm SHA256
-```
-
-Сравните результат с соответствующей строкой `SHA256SUMS.txt`.
-
-## Скриншоты
-
-Это изображения работающего приложения. Значения слов получены от настоящих словарных сервисов; демонстрационные данные в production не используются.
-
-### Русский перевод
-
-![Карточка с русским переводом](docs/images/word-ru.png)
-
-### Английское определение
-
-![Карточка с английским определением](docs/images/word-en.png)
-
-### Настройки
+![English definition](docs/images/word-en.png)
 
 ![Preferences](docs/images/preferences.png)
 
-### Сохранённые слова
+1. Highlight one English word in an accessible Windows app; release the mouse button.
+2. A vocabulary card appears beside the floating Union Jack. **RU** shows translations, **EN** shows a dictionary definition. The sound button uses a Windows speech voice.
+3. Bookmark a word to keep it locally. Open **My vocabulary** from the flag menu or tray to search and remove saved words.
+4. Drag the flag to move it. Click it for preferences; right-click for the menu. The tray menu can pause, hide, show, or quit Buddy.
 
-![My vocabulary](docs/images/vocabulary.png)
+If automatic selection is unavailable, use **Ctrl+Shift+E** to ask UI Automation for the selection. If that also fails, copy one word yourself with Ctrl+C and click **Use copied word** in the popup, preferences, or flag menu. Buddy never generates Ctrl+C, replaces clipboard contents, or reads the clipboard automatically.
 
-## Возможности
+The assistant and popup stay above normal windows and appear without requesting keyboard focus. Opening preferences is an explicit user action and brings that window to the foreground. Fullscreen exclusive apps and elevated processes can behave differently.
 
-- Оригинальный SVG-флаг с плавной анимацией и прозрачным фоном.
-- Флаг и карточка поверх обычных окон, без отдельного значка помощника в панели задач.
-- Перетаскивание флага, сохранение позиции и ограничение перемещения рабочей областью монитора.
-- Автоматическое чтение выделенного слова через Windows UI Automation.
-- Запасная глобальная клавиша **Ctrl+Shift+E** и явное чтение скопированного слова через **Use copied word**.
-- Русский перевод, английское определение, часть речи, IPA, синонимы и пример, когда они есть у источника.
-- Произношение системным голосом Windows.
-- Переключение RU/EN без повторной загрузки полученных значений.
-- Локальный словарь: сохранение без дубликатов, поиск, удаление, восстановление после перезапуска.
-- Кэш, таймауты, ограниченные повторные попытки и ограничения частоты запросов.
-- Меню в трее: пауза, скрытие, показ, настройки, словарь и выход.
+## Build and develop
 
-## Управление
-
-- **Перетащить флаг:** переместить помощника.
-- **Щёлкнуть по флагу:** открыть Preferences.
-- **Правый щелчок по флагу:** открыть меню.
-- **Значок в трее:** настройки, словарь, пауза, скрытие или выход.
-- **Ctrl+Shift+E:** прочитать текущее выделение через Windows UI Automation.
-- **Закладка:** сохранить слово.
-- **Крестик в карточке:** закрыть карточку; приложение продолжит работать.
-- **Quit English Buddy:** полностью закрыть приложение и нативный помощник.
-
-Карточка появляется без запроса клавиатурного фокуса. Окно настроек получает фокус, когда пользователь явно открывает его.
-
-### Если автоматическое чтение не сработало
-
-1. Попробуйте **Ctrl+Shift+E** после выделения слова.
-2. Если приложение не отдаёт выделение, самостоятельно скопируйте одно слово через **Ctrl+C**.
-3. Нажмите **Use copied word** в карточке, Preferences или меню флага.
-
-Есть ручной ввод: поле **A word on your mind? Look it up…** в Preferences.
-
-English Buddy **не нажимает Ctrl+C автоматически, не заменяет содержимое буфера обмена и не читает его в фоновом режиме**. Буфер читается только по команде Use copied word.
-
-## Совместимость и ограничения
-
-Проверено:
-
-- **Yandex Browser 26.8 / Chromium 150:** выделение двойным щелчком на локальной HTML-странице, стандартные настройки доступности, отдельный чистый профиль.
-- **Windows RichTextBox:** настоящее выделение мышью и получение выделения горячей клавишей.
-- **Поле пароля Windows:** выделение проигнорировано.
-
-**ChatGPT для Windows пока требует ручной проверки.** Microsoft Word, Chrome, Edge, Firefox и внешние PDF-программы отдельно не проверялись. Успешная проверка страницы в Яндекс Браузере не означает совместимость с любым сайтом, PDF или нестандартным редактором.
-
-Приложение получает текст через интерфейс доступности Windows. Оно не анализирует скриншоты и не использует OCR, поэтому не может универсально читать любое визуальное выделение. Изображения, сканированные PDF, некоторые нестандартные элементы интерфейса и окна с более высокими привилегиями могут быть недоступны.
-
-Автоматический триггер — выделение мышью; для выделения только с клавиатуры используйте горячую клавишу. Проверка физических мониторов с разными DPI и эксклюзивных полноэкранных приложений остаётся ручной. Расчёты положения окон покрыты модульными тестами.
-
-Статус: [VERIFICATION.md](VERIFICATION.md). Сохранены [результаты desktop-теста](docs/verification/desktop-test.txt), [проверки Яндекс Браузера](docs/verification/yandex-test.txt) и [запуска упакованной версии](docs/verification/packaged-test.txt).
-
-## Настройки
-
-В **Preferences** доступны:
-
-- **Your learning mode:** русский перевод или английское определение.
-- **Watch text selections:** включить или приостановить автоматическое чтение.
-- **Quick lookup shortcut:** включить или отключить Ctrl+Shift+E.
-- **Keep the popup around:** закрывать карточку через 10, 20, 30, 60, 120 секунд или только вручную.
-- **Online vocabulary:** разрешить обращения к словарным сервисам.
-- **A little flag animation:** включить или отключить анимацию флага.
-- **Start with Windows:** запуск при входе в Windows; доступен в упакованной сборке.
-- **Reset position:** вернуть флаг к углу основного монитора.
-- **Clear cache:** очистить результаты запросов, сохранив My vocabulary.
-- **Hide Buddy:** скрыть помощника и приостановить автоматическое чтение. Показать его можно через трей.
-
-Автозапуск по умолчанию выключен. Чтение выделения начинается после Start learning.
-
-## Приватность и локальные данные
-
-Нет аккаунта, телеметрии, синхронизации словаря с облаком или фоновой передачи текста документа.
-
-Перед отправкой слово проверяется: до 64 символов, английские латинские буквы, допустимы внутренние апострофы и дефисы. Пробелы по краям убираются, регистр нормализуется. Фразы, числа, адреса электронной почты и неанглийские выделения отклоняются. Поля, которые UI Automation определяет как парольные, пропускаются.
-
-Онлайн-сервисы получают **одно проверенное слово** и обычные сетевые сведения, включая IP-адрес. В обычной работе выделенный текст не записывается в журнал.
-
-Данные по умолчанию хранятся в `%APPDATA%\english-buddy`:
-
-- `buddy.json` — настройки, положение и сохранённые слова.
-- `cache.json` — кэш запросов.
-
-Это локальные JSON-файлы без шифрования. Повреждённый файл настроек сохраняется с суффиксом `.damaged-…`, а приложение сообщает о восстановлении значений по умолчанию.
-
-Можно выбрать другую папку, например для portable-режима:
+Development requires Node.js 24+, npm, Windows x64 and the .NET Framework 4.x C# compiler included with Windows. Runtime helper uses .NET Framework 4.x; .NET SDK installation is unnecessary. Windows 10/11 normally include .NET Framework 4.8.
 
 ```powershell
-& '.\English-Buddy-Portable-0.1.1-x64.exe' '--buddy-data=C:\EnglishBuddyData'
-```
-
-Сохранённый словарь доступен без сети. При выключенном Online vocabulary можно получать полные ранее кэшированные значения; для нового слова требуется интернет. Кэш хранит до 500 слов с обычным сроком 7 дней. Очистка кэша не удаляет сохранённую лексику.
-
-## Словарные источники и лицензии
-
-- **[Free Dictionary API](https://dictionaryapi.dev/)** — английские определения, части речи, IPA, примеры и синонимы. В карточке указаны источник и его лицензия, часто [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
-- **[Wiktionary](https://en.wiktionary.org/)** — основной источник русских переводов и дополнительный источник синонимов из английского раздела статьи. Используется [MediaWiki API](https://www.mediawiki.org/wiki/API:Revisions). Текущий текст — [CC BY-SA 4.0](https://en.wiktionary.org/wiki/Wiktionary:Copyrights); ссылка на статью и лицензию есть в карточке.
-- **[MyMemory](https://mymemory.translated.net/)** — запасной переводчик. Действуют [условия](https://mymemory.translated.net/doc/en/tos.php), [спецификация API](https://mymemory.translated.net/doc/spec.php) и [лимиты](https://mymemory.translated.net/doc/usagelimits.php).
-- **[Datamuse API](https://www.datamuse.com/api/)** — дополнительный источник английских синонимов через отношение WordNet `rel_syn`. Результаты ранжируются по метаданным частоты употребления. Отправляется только проверенное слово, без текста страницы. Источник указан в карточке. По уведомлению провайдера, в 2027 году условия доступа могут потребовать API-ключ; при недоступности сервиса используются словарные источники. Провайдер сообщает о временном журнале запросов, удаляемом в конце дня.
-
-Платные ключи и вымышленные данные не используются. Качество зависит от источников: слово может иметь несколько значений, а переводы и синонимы могут относиться к разным значениям. Карточка показывает одно английское определение. Это словарный текст, без упрощения нейросетью. Отсутствующие поля и временные ошибки обозначаются явно.
-
-При форматировании русских переводов убираются знаки ударения, отдельные варианты соединяются точкой с запятой. Словарный текст и текст на скриншотах сохраняют лицензии источников; MIT-лицензия кода их не заменяет. Флаг и иконка нарисованы локально из геометрических фигур.
-
-## Разработка из исходников
-
-### Обновление со старой версии
-
-Закройте старую версию через **Quit English Buddy** в трее и запустите новый `.exe`. При использовании обычной папки данных настройки и сохранённые слова остаются на месте. Старый кэш дополняется английскими синонимами при следующем онлайн-поиске; очищать его вручную не требуется. Если использовался `--buddy-data`, передайте новой версии ту же папку.
-
-Нужны **Windows x64**, **Node.js 24+**, npm и C#-компилятор .NET Framework 4.x по стандартному пути Windows. Отдельный .NET SDK не нужен.
-
-```powershell
-git clone https://github.com/selecteg12/english-buddy.git
-cd english-buddy
 npm ci
 node node_modules/electron/install.js
 npm run dev
 ```
 
-Установку бинарного Electron выполняйте явно: современный npm-пакет Electron устанавливается отдельно от исполняемой среды. Зависимости находятся в devDependencies, потому что React и словарные библиотеки включаются в production-бандлы; готовое приложение не требует npm-модулей пользователя.
-
-`npm run dev` компилирует помощник, запускает Vite на `127.0.0.1:5173` и Electron. Renderer обновляется через Vite. Main/preload пересобираются, но для применения изменений перезапустите dev-команду. После изменения C# тоже перезапустите её.
-
-### Команды
+Recent Electron npm packages install the JavaScript package separately from the Electron binary, so the explicit install command above is included. Development mode watches renderer/main source; restart the dev command after changing main-process behavior. Native changes require restarting the dev command.
 
 ```powershell
-npm run typecheck       # Строгая проверка TypeScript
-npm run lint            # ESLint
-npm test                # Модульные тесты Vitest
-npm run check           # Все три проверки выше
-npm run native          # C#-помощник и иконки
-npm run build           # Полная production-сборка
-npm start               # Запуск production-сборки из проекта
-npm run package:dir     # Упакованное приложение без установщика
-npm run package         # NSIS-установщик и portable .exe
-```
-
-После упаковки файлы находятся в `release/`. Production-приложение загружает локальные файлы через `buddy://app`; Vite ему не нужен.
-
-### Интеграционные проверки
-
-```powershell
-npm run build
-npm run test:desktop
+npm run check           # TypeScript, ESLint, unit tests
+npm run build           # C# helper + production renderer/main/preload
+npm start               # Run production source build
+npm run test:desktop    # Electron, real network APIs, own Windows test fixture
 node scripts/live-check.mjs
-node scripts/yandex-test.mjs
-
-# После npm run package или npm run package:dir:
-node scripts/packaged-test.mjs
+node scripts/yandex-test.mjs  # Installed Yandex, isolated test profile
+npm run package         # Windows x64 NSIS installer and portable exe
 ```
 
-GUI-тестам нужен интерактивный рабочий стол Windows. Они могут временно показывать тестовые окна и двигать указатель внутри них. Проверка Яндекс Браузера использует отдельный профиль в `artifacts/`, не затрагивая пользовательские вкладки и cookies. Путь в тестовом скрипте задан для стандартной установки: `C:\Program Files (x86)\Yandex\YandexBrowser\Application\browser.exe`.
+Tests may briefly show isolated windows to verify native selections. Yandex testing uses a new profile under `artifacts`; it does not use existing tabs, cookies or account sessions. Test artifacts and screenshots are also under `artifacts`. The optional native diagnostic script reads only service metadata and validated single words; it is not part of normal startup.
 
-Если Ctrl+Shift+E занят другой программой, Preferences покажет сообщение. Если сервис недоступен или исчерпал квоту, появится ошибка либо частичный результат. Если C#-компилятор отсутствует, `npm run native` остановится с сообщением об отсутствующем .NET Framework compiler.
+## Architecture
 
-## Архитектура
+- `src/main`: Electron lifecycle, three isolated windows, tray, shortcut, validated IPC, helper supervision. No renderer receives Node or unrestricted IPC access.
+- `src/preload`: explicit application actions and removable state subscriptions.
+- `src/renderer`: animated original SVG flag, word card, English preferences, saved vocabulary.
+- `src/native/windows/SelectionHelper.cs`: low-level mouse-release event, 180 ms debounce, UI Automation TextPattern on an MTA worker, protected input checks, explicit shortcut requests and local speech.
+- `src/services`: provider interfaces, structured response validation, timeout/retry, per-word concurrent deduplication, 20 new lookups/minute, at most 3 concurrent vocabulary lookups, 500-word cache with 7-day expiry.
+- `src/storage`: validated local settings and saved words, atomic replacement writes, preservation of damaged data files.
+- `src/shared`: schemas, single-word validation, screen geometry.
+- `tests`: validation, providers, cache, errors, settings and saved vocabulary.
 
-```text
-english-buddy/
-├── assets/                     # Оригинальные иконки
-├── docs/
-│   ├── images/                 # Скриншоты приложения
-│   └── verification/           # Сохранённые результаты проверок
-├── src/
-│   ├── main/                   # Окна, жизненный цикл, трей, IPC, shortcut
-│   │   ├── selection/native.ts # Запуск и контроль помощника
-│   │   └── windows/windows.ts  # Положение и поведение окон
-│   ├── preload/                # Узкий API между main и renderer
-│   ├── renderer/               # React: флаг, карточка, настройки, словарь
-│   ├── native/windows/         # C#: мышь, UI Automation, голос
-│   ├── services/               # Словари, перевод, кэш, дедупликация
-│   ├── storage/                # Настройки и сохранённые слова
-│   └── shared/                 # Типы, схемы, валидация, геометрия
-├── scripts/                    # Разработка, сборка, интеграционные тесты
-├── tests/                      # Модульные тесты
-├── electron-builder.yml        # Windows x64 NSIS и portable
-└── package-lock.json           # Зафиксированные зависимости
-```
+The native helper reads selection after a mouse drag or double-click; it does not poll screen text or re-read after ordinary single clicks. A stuck accessibility call causes the separate helper process to restart, with at most 3 failures per minute. Exiting Buddy terminates the helper. There is no telemetry, account, cloud vocabulary sync, screenshot monitoring, or OCR.
 
-```mermaid
-flowchart LR
-    A[Выделение слова мышью] --> B[C# helper: UI Automation]
-    B --> C[Electron main: проверка слова]
-    C --> D[Словарный сервис и кэш]
-    D --> E[Карточка React: RU / EN]
-    E --> F[Локальный сохранённый словарь]
-```
+## Data and privacy
 
-Нативный модуль слушает события мыши, не опрашивая экран по таймеру. После выделения действует debounce 180 мс. UI Automation выполняется в отдельном MTA-потоке вспомогательного процесса. Зависший вызов изолирован от Electron; процесс перезапускается с ограничением повторных сбоев.
+Legacy cached entries are enriched with English synonyms on their next online lookup. Existing definitions/translations are reused, and saved vocabulary is preserved. Close the old version through the tray before opening the new executable; use the same `--buddy-data` directory if one was specified.
 
-Сервис объединяет одновременные запросы одного слова, ограничивает новые обращения до 20 слов в минуту и до трёх одновременных поисков. Временные сетевые ошибки имеют ограниченный повтор; неполный результат не кэшируется как полный.
+Normal app data is in `%APPDATA%\english-buddy`: `buddy.json` (preferences and saved vocabulary) and `cache.json` (lookup cache). To use another data directory, including with a portable build, launch with `--buddy-data="C:\path\to\data"`. Data is local JSON, without encryption. Saved vocabulary remains available in the list without a network connection. Cached complete lookups work with **Online vocabulary** disabled. Clearing the lookup cache leaves saved words intact.
 
-Renderer работает с `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`. Файловая система и процессы остаются в main; preload предоставляет конкретные действия. Проверяются источники IPC и входные значения, действуют CSP и ограничения внешних ссылок. Ответы API проходят Zod-валидацию и выводятся как текст.
+The online services receive only a word validated as 1–64 ASCII letters, optionally separated by apostrophes or hyphens. Phrases, email addresses, numbers, non-English selections and password fields identified by UI Automation are ignored. No selected text is logged by the normal application. Providers naturally receive the network IP address.
 
-## Что проверено
+Autostart is off by default and can be enabled in a packaged build. Hiding Buddy also pauses automatic selection reading until it is shown again. Exit from the tray to stop the app completely.
 
-- TypeScript и ESLint — успешно.
-- **46 модульных тестов** — успешно.
-- Компиляция C# и production-сборка — успешно.
-- Реальные словарные запросы, RU/EN, сохранение и поиск, восстановление режима и словаря после перезапуска — успешно.
-- Выделение в RichTextBox, горячая клавиша и пропуск поля пароля — успешно.
-- Автоматическое выделение в Яндекс Браузере с обычными настройками доступности — успешно.
-- Создание установщика и portable — успешно.
-- Запуск упакованного `win-unpacked/English Buddy.exe` без dev-сервера, запуск встроенного помощника и реальные значения слова — успешно.
+## Vocabulary sources and licensing
 
-Установщик и portable созданы. Непосредственно тестировалась распакованная production-версия; установщик не устанавливался в профиль пользователя во время автоматической проверки. Голос, автозапуск, физические смешанные DPI, SmartScreen и ChatGPT Windows остаются ручными проверками. Полный отчёт — [VERIFICATION.md](VERIFICATION.md).
+- [Datamuse API](https://www.datamuse.com/api/): dedicated English WordNet synonyms via `rel_syn`, ordered using frequency metadata. Only a validated word is sent. Attribution appears on the card. The provider has announced that access may require a key in 2027; dictionary synonyms remain a fallback. Its documentation describes a temporary query log discarded at the end of the day.
 
-## Ручная проверка
+- [Free Dictionary API](https://dictionaryapi.dev/): real English definitions, part of speech, phonetics, examples and synonyms. Its response-provided license is linked on the card, often [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The word's Wiktionary page is linked for attribution/history.
+- [Wiktionary](https://en.wiktionary.org/): primary Russian translations and synonym templates from the English section, via the [MediaWiki revisions API](https://www.mediawiki.org/wiki/API:Revisions). Current text is used under [CC BY-SA 4.0](https://en.wiktionary.org/wiki/Wiktionary:Copyrights); the source entry is linked on each card. Stress marks are removed, and translation terms are joined with semicolons.
+- [MyMemory](https://mymemory.translated.net/): translation fallback when a Russian Wiktionary entry is missing or cannot be parsed. See its [API specification](https://mymemory.translated.net/doc/spec.php), [usage limits](https://mymemory.translated.net/doc/usagelimits.php) and [terms](https://mymemory.translated.net/doc/en/tos.php). No invented API key, email address, or paid service is used. Quota failures are reported.
 
-1. В Яндекс Браузере и ChatGPT Windows выделите `consistent`; попробуйте мышь и двойной щелчок.
-2. Убедитесь, что карточка не забирает фокус. Переключите RU/EN и сохраните слово.
-3. Если карточка не появилась, попробуйте горячую клавишу и Use copied word.
-4. Приостановите чтение, выделите слово, возобновите. Проверьте фразу, число и парольное поле.
-5. Перезапустите приложение: режим, положение и слова должны восстановиться.
-6. Проверьте края мониторов, DPI, таймер, анимацию и запуск с Windows.
-7. Скройте и верните флаг через трей. Завершите приложение через Quit English Buddy.
+Dictionary text and translations remain under their source licenses; the app's own MIT license does not replace those licenses. Providers can contain mistakes. Words may have several meanings; Russian translations and synonyms can span those meanings, while the card shows one English definition. Definitions are actual dictionary entries, without AI simplification. If a field is unavailable, the card says so; no made-up data is substituted. Partial results are usable but not cached as complete entries.
 
-## Вклад в проект и лицензия
+The flag and app icon are drawn locally from geometric shapes. Pronunciation uses the installed Windows voice; an English voice is recommended. No remote audio download is required.
 
-Для изменения кода создайте ветку, выполните `npm run check` и `npm run build`, а для Windows-интеграции проведите подходящий desktop-тест. В сообщении об ошибке укажите версию Windows, приложения-источника и способ выделения; не прикладывайте приватный текст, `buddy.json` или содержимое буфера обмена.
+## Selection compatibility and limits
 
-Код распространяется под [MIT](LICENSE). Словарные материалы имеют отдельные лицензии, перечисленные выше. macOS и Linux в этой версии не поддерживаются.
+UI Automation cannot read every visible selection. Support depends on the application's accessibility provider. It does not extract text from images or scanned PDFs, and it cannot generally access higher-privilege windows. A mouse release is the automatic trigger; keyboard-only highlighting can be read with the shortcut. Dragging and popup placement use Electron display coordinates; native selection uses per-monitor-aware screen coordinates. Multiple-monitor positioning is covered by geometry tests; physical mixed-DPI monitor testing still needs user verification.
+
+Executed compatibility results are recorded in `artifacts/desktop-test.txt` and `artifacts/yandex-test.txt`; see `VERIFICATION.md`. Automatic selection was verified in Yandex Browser 26.8 (Chromium 150) on an isolated local HTML page with default accessibility settings, and in a Windows RichTextBox. This does not guarantee every website, PDF, or browser document. ChatGPT for Windows still needs a manual check with a selected word. Chrome, Edge, Firefox, Word and external PDF readers were not individually verified in this environment. No universal compatibility claim is made.
+
+## Manual checks
+
+1. In Yandex Browser and ChatGPT for Windows, highlight a word such as `consistent`; wait for its card. Try mouse dragging and double-clicking.
+2. Ensure typing remains focused in the source app, even when Buddy appears. Switch RU/EN and bookmark a word.
+3. If no card appears, try Ctrl+Shift+E; if necessary, manually copy the word and click Use copied word.
+4. Pause selection watching, select again, then resume. Select a phrase, a number or a password: no vocabulary request should be generated.
+5. Restart Buddy and verify mode, position and saved vocabulary. Search and delete a saved word.
+6. Drag Buddy to each monitor and screen edge; verify flag/card stay inside the work area at different DPI settings.
+7. Change popup timeout, animation and startup. Hide/show via tray; quit and confirm the helper exits.
+
+Unsigned MVP builds may receive a Windows SmartScreen prompt. No certificate or system security setting is changed by the build.
